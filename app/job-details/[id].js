@@ -42,6 +42,7 @@ const JobDetails = () => {
         );
         break;
       case "About":
+        return <JobAbout info={data[0].job_description ?? ["N/A"]} />;
       case "Responsibilities":
 
       default:
