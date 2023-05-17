@@ -1,13 +1,13 @@
+import { Stack, useRouter, useSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
 import {
-  Text,
   View,
+  Text,
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import { Stack, useRouter, useSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
 
 import {
   Company,
@@ -26,10 +26,18 @@ const JobDetails = () => {
   const params = useSearchParams();
   const router = useRouter();
 
-  const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const { data, isLoading, error, refetch } = useFetch("job-details", {
+    job_id: params.id,
+  });
 
-  const onRefresh = () => {};
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    refetch();
+    setRefreshing(false);
+  }, []);
 
   const displayTabContent = () => {
     switch (activeTab) {
@@ -40,9 +48,12 @@ const JobDetails = () => {
             points={data[0].job_highlights?.Qualifications ?? ["N/A"]}
           />
         );
-        break;
+
       case "About":
-        return <JobAbout info={data[0].job_description ?? ["N/A"]} />;
+        return (
+          <JobAbout info={data[0].job_description ?? "No data provided"} />
+        );
+
       case "Responsibilities":
         return (
           <Specifics
@@ -50,14 +61,11 @@ const JobDetails = () => {
             points={data[0].job_highlights?.Responsibilities ?? ["N/A"]}
           />
         );
+
       default:
-        break;
+        return null;
     }
   };
-
-  const { data, isLoading, error, refetch } = useFetch("job-details", {
-    job_id: params.id,
-  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
@@ -70,7 +78,7 @@ const JobDetails = () => {
             <ScreenHeaderBtn
               iconUrl={icons.left}
               dimension="60%"
-              handelPress={() => router.back()}
+              handlePress={() => router.back()}
             />
           ),
           headerRight: () => (
@@ -92,7 +100,7 @@ const JobDetails = () => {
           ) : error ? (
             <Text>Something went wrong</Text>
           ) : data.length === 0 ? (
-            <Text>No data</Text>
+            <Text>No data available</Text>
           ) : (
             <View style={{ padding: SIZES.medium, paddingBottom: 100 }}>
               <Company
