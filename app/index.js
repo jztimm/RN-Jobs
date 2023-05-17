@@ -10,47 +10,67 @@ import {
   Welcome,
 } from "../components";
 
+import Login from "../app/login/login";
+
 const Home = () => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [firstName, setFirstName] = useState("");
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
+    <>
       <Stack.Screen
-        options={{
-          headerStyle: { backgroundColor: COLORS.lightWhite },
-          headerShadowVisable: false,
-          headerLeft: () => (
-            <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
-          ),
-          headerRight: () => (
-            <ScreenHeaderBtn iconUrl={images.profile} dimension="100%" />
-          ),
-          headerTitle: "",
+        initialRouteName="Login" ///the name of the initial screen
+        screenOptions={{
+          headerShown: false,
         }}
-      />
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View
-          style={{
-            flex: 1,
-            padding: SIZES.medium,
+      >
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Screen>
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
+        <Stack.Screen
+          options={{
+            headerStyle: { backgroundColor: COLORS.lightWhite },
+            headerShadowVisable: false,
+            headerLeft: () => (
+              <ScreenHeaderBtn iconUrl={icons.menu} dimension="60%" />
+            ),
+            headerRight: () => (
+              <ScreenHeaderBtn
+                iconUrl={images.profile}
+                dimension="100%"
+                handlePress={() => {
+                  router.push("/profile/profile");
+                }}
+              />
+            ),
+            headerTitle: "",
           }}
-        >
-          <Welcome
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            handleClick={() => {
-              if (searchTerm) {
-                router.push(`/search/${searchTerm}`);
-              }
+        />
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View
+            style={{
+              flex: 1,
+              padding: SIZES.medium,
             }}
-          />
-          <Popularjobs />
-          <Nearbyjobs />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          >
+            <Welcome
+              firstName={firstName}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              handleClick={() => {
+                if (searchTerm) {
+                  router.push(`/search/${searchTerm}`);
+                }
+              }}
+            />
+            <Popularjobs />
+            <Nearbyjobs />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 };
 
